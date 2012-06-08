@@ -1,5 +1,4 @@
 var
-
     //Output ports
     MOTOR_A = 0x00,
     MOTOR_B = 0x01,
