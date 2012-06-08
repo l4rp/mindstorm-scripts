@@ -1,0 +1,36 @@
+<pre id='log'>
+</pre>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var logEl = document.getElementById('log');
+  function log(msg) {
+    if (logEl) {
+      logEl.textContent = msg + "\n" + logEl.textContent;
+    }
+  }
+  var socket = io.connect('http://localhost');
+  log("Connecting");
+  function play(e) {
+    e.preventDefault();
+    tone(e.pageX);
+    window.onmousemove = play;
+  }
+  function stop() {
+    window.onmousemove = null;
+  }
+  window.onmousedown = play;
+  window.onmouseup = stop;
+  function tone(hz) {
+    if (!hz) {
+      hz = 440+parseInt(Math.random()*800);
+    }
+    log("Playing tone: "+hz);
+    socket.emit('play_tone',hz, 50);
+  }
+  socket.on('welcome', function (data) {
+    log('Connected');
+    //setInterval(tone, 2000);
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+</script>
