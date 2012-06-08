@@ -56,7 +56,7 @@ var nxt = {
   MODEMASK: 0xe0
 };
 
-var functions = ['play_tone', 'set_output_state'];
+var functions = ['start_program', 'stop_program', 'play_tone', 'set_output_state', 'set_input_state', 'get_output_state', 'get_input_values', 'reset_input_scaled_value', 'message_write', 'reset_motor_position', 'get_battery_level', 'stop_sound_playback', 'keep_alive', 'ls_get_status', 'ls_write', 'ls_read', 'get_current_program_name', 'message_read', 'execute_command', 'status_handle', 'register_callback', 'close_connection'];
 for (var i = 0, l = functions.length; i<l; i++) {
   (function(i){
     nxt[functions[i]] = function() {
