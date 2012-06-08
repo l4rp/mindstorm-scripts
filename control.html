@@ -1,3 +1,38 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="MobileOptimized" content="320" />
+<style>
+  * {
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  span {
+    color:white;
+    font-size:5em;
+    font-weight: bold;
+    display:inline-block;
+    width:30%;
+    border:2px solid black;
+    background-color: green;
+    height:200px;
+    line-height:200px;
+    text-align:center;
+  }
+  span.stop {
+    background-color: red;
+  }
+</style>
+</head>
+<body>
+<div class='controls'>
+  <span class='left'>←</span> <span class='forward'>↑</span>
+<span class='right'>→</span>
+<br />
+<!--<span class='stop'>STOP</span>-->
+</div>
 <pre id='log'>
 </pre>
 <script src="/socket.io/socket.io.js"></script>
@@ -11,18 +46,79 @@
   }
 
   ///////////////////////////////////////////////////////////////
-
-  function play(e) {
-    e.preventDefault();
-    log("Turning motor A through 760 degrees");
-    nxt.set_output_state(nxt.MOTOR_A, 100, nxt.MOTORON, nxt.REGULATION_MODE_IDLE, 0, nxt.MOTOR_RUN_STATE_RUNNING, 760)
-    window.onmousemove = play;
+  function power(motor, power, angle) {
+    nxt.set_output_state(motor, power, nxt.MOTORON, nxt.REGULATION_MODE_MOTOR_SYNC, 0, nxt.MOTOR_RUN_STATE_RUNNING, angle);
+  }
+  var amount = 3600;
+  function left() {
+    power(nxt.MOTOR_B, 100, amount);
+    power(nxt.MOTOR_A, 99, amount);
+  }
+  function backward() {
+    console.log("Backwards");
+    //power(1, 100, amount);
+    //power(nxt.MOTOR_A, 50, 149);
+    power(nxt.MOTOR_A, 50, 50);
+    power(nxt.MOTOR_B, 99, amount);
+    power(nxt.MOTOR_A, 99, amount);
+  }
+  function forward() {
+    //power(1, 100, amount);
+    power(nxt.MOTOR_A, 50, 50);
+    power(nxt.MOTOR_B, 100, amount);
+    power(nxt.MOTOR_A, 100, amount);
+  }
+  function right() {
+    power(nxt.MOTOR_A, 100, amount);
+    power(nxt.MOTOR_B, 99, amount);
   }
   function stop() {
-    window.onmousemove = null;
+    nxt.set_output_state(nxt.MOTOR_ALL, 0, nxt.MOTOROFF, nxt.REGULATION_MODE_IDLE, 0, nxt.MOTOR_RUN_STATE_RUNNING, 0);
+    //nxt.set_output_state(nxt.MOTOR_B, 0, nxt.MOTOROFF, nxt.REGULATION_MODE_IDLE, 0, nxt.MOTOR_RUN_STATE_RUNNING, 0);
   }
-  window.onmousedown = play;
-  window.onmouseup = stop;
+  function p(e) {
+    e.preventDefault();
+    return false;
+  }
+  document.body.onclick = p;
+  document.body.onmousemove = p;
+  document.body.ontouchmove = p;
+  document.body.ondblclick = p;
+  if (/mobile/i.test(navigator.userAgent)) {
+    document.getElementsByClassName('left')[0].ontouchstart = left;
+    document.getElementsByClassName('forward')[0].ontouchstart = forward;
+    document.getElementsByClassName('right')[0].ontouchstart = right;
+    //document.getElementsByClassName('stop')[0].ontouchstart = stop;
+    document.body.ontouchend = stop;
+  } else {
+    document.getElementsByClassName('left')[0].onmousedown = left;
+    document.getElementsByClassName('forward')[0].onmousedown = forward;
+    document.getElementsByClassName('right')[0].onmousedown = right;
+    //document.getElementsByClassName('stop')[0].onmousedown = stop;
+    document.body.onmouseup = stop;
+  }
+  var isDown = false;
+  window.onkeydown = function(e) {
+    if (isDown) {
+      return;
+    }
+    isDown = true;
+    console.log(e.keyCode);
+    if (e.keyCode == 37) {
+      left();
+    } else if (e.keyCode == 39) {
+      right();
+    } else if (e.keyCode == 38) {
+      forward();
+    } else if (e.keyCode == 40) {
+      backward();
+    }
+  }
+  window.onkeyup = function(e) {
+    isDown = false;
+    console.log("Up");
+    stop();
+  }
 
   ///////////////////////////////////////////////////////////////
 
@@ -31,3 +127,5 @@
     log('Connected');
   });
 </script>
+</body>
+</html>
