@@ -1,3 +1,4 @@
+var socket = io.connect('http://'+window.location.host);
 var nxt = {
   //Output ports
   MOTOR_A: 0x00,
@@ -55,7 +56,7 @@ var nxt = {
   MODEMASK: 0xe0
 };
 
-functions = ['play_tone', 'set_output_state'];
+var functions = ['play_tone', 'set_output_state'];
 for (var i = 0, l = functions.length; i<l; i++) {
   (function(i){
     nxt[functions[i]] = function() {
