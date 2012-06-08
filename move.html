@@ -9,11 +9,14 @@
       logEl.textContent = msg + "\n" + logEl.textContent;
     }
   }
-  var socket = io.connect('http://'+window.location.host);
-  log("Connecting");
+
+  ///////////////////////////////////////////////////////////////
+
   function play(e) {
     e.preventDefault();
-    tone(e.pageX);
+    log("Turning motor A through 760 degrees");
+    // port, power, mode, reg_mode, turn_ratio, run_state, tacho_limit
+    nxt.set_output_state(nxt.MOTOR_A, 100, nxt.MOTORON, nxt.REGULATION_MODE_IDLE, 0, nxt.MOTOR_RUN_STATE_RUNNING, 760)
     window.onmousemove = play;
   }
   function stop() {
@@ -21,17 +24,11 @@
   }
   window.onmousedown = play;
   window.onmouseup = stop;
-  function tone(hz) {
-    if (!hz) {
-      hz = 440+parseInt(Math.random()*800);
-    }
-    log("Playing tone: "+hz);
-    nxt.play_tone(hz, 50);
-  }
+
+  ///////////////////////////////////////////////////////////////
+
+  log("Connecting");
   socket.on('welcome', function (data) {
     log('Connected');
-    //setInterval(tone, 2000);
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
   });
 </script>
